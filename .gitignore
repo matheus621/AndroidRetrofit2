@@ -15,6 +15,7 @@ gen /
 out /
 
 # Arquivos Gradle
+.gradle/*
 .gradle /
 construir /
 
