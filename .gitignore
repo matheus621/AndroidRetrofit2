@@ -1,0 +1,80 @@
+# Construiu arquivos de aplicativos
+* .apk
+* .ap_
+* .ab
+
+# Arquivos para a VM ART / Dalvik
+* .dex
+
+# Arquivos de classe Java
+* .class
+
+# Arquivos gerados
+bin /
+gen /
+out /
+
+# Arquivos Gradle
+.gradle /
+construir /
+
+# Arquivo de configuração local (caminho sdk, etc)
+local.properties
+
+# Pasta Proguard gerada pelo Eclipse
+proguard /
+
+# Arquivos de log
+* .log
+
+# Arquivos temporários do editor de navegação do Android Studio
+.navigation /
+
+# Android Studio captura a pasta
+captura /
+
+# IntelliJ
+* .iml
+.idea / workspace.xml
+.idea / tasks.xml
+.idea / gradle.xml
+.idea / assetWizardSettings.xml
+.idea / dicionários
+.idea / libraries
+.idea / caches
+# Android Studio 3 no arquivo .gitignore.
+.idea / caches / build_file_checksums.ser
+.idea / modules.xml
+
+# Arquivos de armazenamento de chaves
+# Descomente as linhas a seguir se você não quiser verificar seus arquivos de armazenamento de chaves.
+# * .jks
+# * .keystore
+
+# Pasta de criação nativa externa gerada no Android Studio 2.2 e posterior
+.externalNativeBuild
+
+# Serviços do Google (por exemplo, APIs ou Firebase)
+# google-services.json
+
+# Freeline
+freeline.py
+Freeline /
+freeline_project_description.json
+
+# fastlane
+fastlane / report.xml
+fastlane / Preview.html
+fastlane / capturas de tela
+fastlane / test_output
+fastlane / readme.md
+
+# Controle de versão
+vcs.xml
+
+# lint
+fiapos / intermediários /
+lint / gerado /
+lint / saídas /
+lint / tmp /
+# lint / reports /
