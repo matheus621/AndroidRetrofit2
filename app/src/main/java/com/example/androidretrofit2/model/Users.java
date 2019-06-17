@@ -1,5 +1,7 @@
 package com.example.androidretrofit2.model;
 
+import android.app.AlertDialog;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,7 +20,7 @@ public class Users {
     public Company company;
 
     @Builder
-    public Users(Integer id, String name, String username, String email, Address address, String phone, String website, Company company) {
+    public Users() {
         this.id = id;
         this.name = name;
         this.username = username;

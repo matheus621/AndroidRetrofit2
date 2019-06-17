@@ -3,6 +3,6 @@
     <string name="btn_text_user">User</string>
     <string name="hint_txt_id">Enter id</string>
     <string name="hint_txt_username">Enter username</string>
-    <string name="hint_txt_data">Enter your data</string>
-    <string name="btn_txt_addUser">Add</string>
+    <string name="hint_txt_phone">Enter your phone</string>
+    <string name="btn_txt_userAdd">Adicionar</string>
 </resources>

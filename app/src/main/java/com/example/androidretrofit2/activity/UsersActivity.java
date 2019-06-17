@@ -1,15 +1,21 @@
 package com.example.androidretrofit2.activity;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
+import android.view.ContextMenu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.example.androidretrofit2.R;
+import com.example.androidretrofit2.adapter.UsersAdapter;
 import com.example.androidretrofit2.bootstrap.APIClient;
 import com.example.androidretrofit2.model.Users;
 import com.example.androidretrofit2.resource.UsersResource;
@@ -24,123 +30,128 @@ import retrofit2.Response;
 
 public class UsersActivity extends AppCompatActivity {
 
-    UsersResource apiUserResouce;
+    UsersResource apiUserResourse;
 
-    ListView listViewUser;
-    List<Users> listUser;
-    List<HashMap<String,String>> colecao =
-            new ArrayList<HashMap<String,String>>();
+    private String username;
+    private String phone;
+    private Integer id;
+
+    EditText txtId;
+    EditText txtUserName;
+    EditText txtPhone;
+
+    ListView listViewUsers;
+    ArrayList<Users> listUsers = new ArrayList<Users>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
 
-        //tem o contexto da aplicação (application)
-        //PASSO 4
-        apiUserResouce = APIClient.getClient().create(UsersResource.class);
+        apiUserResourse = APIClient.getClient().create(UsersResource.class);
 
-        Call<List<Users>> get = apiUserResouce.get();
+        Call<List<Users>> get = apiUserResourse.get();
 
         get.enqueue(new Callback<List<Users>>() {
 
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onResponse(Call<List<Users>> call, Response<List<Users>> response) {
-                listViewUser = findViewById(R.id.listViewUser);
-
-                listUser = response.body();
-
-                listUser.forEach(u ->{
-                    //Criar dados para adapter
-                    HashMap<String,String> mapUser = new HashMap<String,String>();
-                    mapUser.put("id",String.valueOf(u.getId()));
-                    mapUser.put("name",u.getName());
-
-                    colecao.add(mapUser);
-                });
-
-                String[] from = {"id","name"};
-                int[] to = {R.id.txtId,R.id.txtUserName};
-
-                SimpleAdapter simpleAdapter =
-                        new SimpleAdapter(
-                                getApplicationContext(),
-                                colecao,
-                                R.layout.user,
-                                from,
-                                to);
-
-                listViewUser.setAdapter(simpleAdapter);
+                listViewUsers = findViewById(R.id.listViewUser);
+                listUsers = (ArrayList<Users>) response.body();
+                listViewUsers.setAdapter(new UsersAdapter(getApplicationContext(), listUsers));
+                registerForContextMenu(listViewUsers);
             }
 
             @Override
             public void onFailure(Call<List<Users>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), t.toString(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), t.toString(), Toast.LENGTH_LONG).show();
             }
         });
-//    }
-//
-//    public void addUser(View view) {
-//
-//        String username,data;
-//        Integer id;
-//        id = Integer.parseInt(txtId.getText().toString());
-//        username = txtUserName.getText().toString();
-//        data = txtData.getText().toString();
-//
-//
-//        final User user = User.builder()
-//                .id(id)
-//                .userName(username)
-//                .avatar(null)
-//                .uuid(UUID.randomUUID().toString())
-//                .data(data)
-//                .build();
-//
-//        Call<User> post = apiUserResouce.post(user);
-//        post.enqueue(new Callback<User>() {
-//            @Override
-//            public void onResponse(Call<User> call, Response<User> response) {
-//                User u = response.body();
-//                Toast.makeText(getApplicationContext(),
-//                        u.toString(),
-//                        Toast.LENGTH_LONG).show();
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<User> call, Throwable t) {
-//                Toast.makeText(getApplicationContext(),
-//                        t.getMessage(),
-//                        Toast.LENGTH_LONG).show();
-//            }
-//        });
-//
-//        Call<User> put = apiUserResouce.put(user);
-//        put.enqueue(new Callback<User>() {
-//            @Override
-//            public void onResponse(Call<User> call, Response<User> response) {
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<User> call, Throwable t) {
-//
-//            }
-//        });
-//
-//        Call<Void> delete = apiUserResouce.delete(user);
-//        delete.enqueue(new Callback<Void>() {
-//            @Override
-//            public void onResponse(Call<Void> call, Response<Void> response) {
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Void> call, Throwable t) {
-//
-//            }
-//        });
+    }
+
+
+    private boolean existeId(ArrayList<Users> users, int id) {
+        for (Users user : users) {
+            if (user.getId() == id)
+                return true;
+        }
+        return false;
+    }
+
+    public void userAdd(View view) {
+
+        txtId = findViewById(R.id.txtId);
+        txtUserName = findViewById(R.id.txtUserName);
+        txtPhone = findViewById(R.id.txtPhone);
+
+
+        id = Integer.parseInt(txtId.getText().toString());
+        username = txtUserName.getText().toString();
+        phone = txtPhone.getText().toString();
+
+        Users user = new Users();
+        user.setId(id);
+        user.setName(username);
+        user.setPhone(phone);
+
+        Call<Users> post = apiUserResourse.post(user);
+        post.enqueue(new Callback<Users>() {
+            @Override
+            public void onResponse(Call<Users> call, Response<Users> response) {
+                Users u = response.body();
+                listViewUsers = findViewById(R.id.listViewUser);
+
+                if (existeId(listUsers, id)) {
+                    Toast.makeText(getApplicationContext(), "PESSOA JÁ EXISTE", Toast.LENGTH_LONG).show();
+                    txtPhone.setText("");
+                    txtId.setText("");
+                    txtUserName.setText("");
+                } else {
+
+                    listUsers.add(user);
+
+                    listViewUsers.setAdapter(new UsersAdapter(getApplicationContext(), listUsers));
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Users> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),
+                        t.getMessage(),
+                        Toast.LENGTH_LONG).show();
+            }
+
+        });
+
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        MenuItem deletar = menu.add("Delete");
+        deletar.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+                Users user = (Users) listViewUsers.getItemAtPosition(info.position);
+                Call<Void> delete = apiUserResourse.delete(user.getId());
+                delete.enqueue(new Callback<Void>() {
+                   @Override
+                   public void onResponse(Call<Void> call, Response<Void> response) {
+                       apiUserResourse.delete(user.getId());
+                       Intent intent = new Intent(listViewUsers.getContext(),listUsers.getClass());
+                       startActivity(intent);
+                   }
+
+                   @Override
+                   public void onFailure(Call<Void> call, Throwable t) {
+
+                   }
+               });
+                return false;
+            }
+        });
     }
 }
